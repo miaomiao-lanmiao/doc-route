@@ -42,7 +42,8 @@ Check exact filename case on every platform. This is not a filesystem sandbox
 against malicious concurrent modifications; trust the local runtime/filesystem.
 
 Bounds: 10000 directory entries, 1000 Markdown files, 2 MiB per document, 32 MiB
-total read bytes, 20000 links, 64 KiB per source line. Deterministic output.
+total read bytes, 20000 links, 100000 lines/10000 anchors per document,
+64 KiB per source line. Deterministic output.
 Reports contain relative source/target paths, fragments, line numbers and finding
 codes, never source paragraphs, absolute root paths, remote URLs or URL queries.
 These names can still be sensitive and require review before sharing.
