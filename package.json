@@ -1,0 +1,15 @@
+{
+  "name": "doc-route-cli", "version": "0.1.0", "type": "module", "license": "MIT",
+  "description": "Offline Markdown navigation checks for local paths and anchors.",
+  "engines": { "node": ">=22" },
+  "bin": { "docroute": "dist/cli.js" },
+  "exports": "./dist/index.js", "types": "./dist/index.d.ts",
+  "files": ["dist", "README.md", "LICENSE", "docs", "examples", "CONTRIBUTING.md", "SECURITY.md", "AGENTS.md"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json", "test": "npm run build && node --test test/*.test.mjs",
+    "check:security": "node tools/security-check.mjs", "check:package": "node tools/package-check.mjs",
+    "prepack": "npm run build"
+  },
+  "devDependencies": { "@types/node": "22.20.5", "typescript": "7.0.2" },
+  "keywords": ["markdown", "documentation", "links", "offline", "cli"]
+}
