@@ -42,6 +42,14 @@ test('unmatched backtick runs and escaped comment openers remain literal', () =>
   assert.deepEqual(scanMarkdown('`[literal](good)``').links, [{ line: 1, destination: 'good' }]);
   assert.deepEqual(scanMarkdown('\\<!-- [real](good)').links, [{ line: 1, destination: 'good' }]);
 });
+
+test('dense single-line code spans preserve later links after a multiline comment', () => {
+  const row = '`x` '.repeat(16000) + '`<!--` [visible](target.md)';
+  const input = '<!-- hidden\n` --> ' + Array(16).fill(row).join('\n') + '\n# Visible';
+  const result = scanMarkdown(input);
+  assert.deepEqual(result.links, Array.from({ length: 16 }, (_, index) => ({ line: index + 2, destination: 'target.md' })));
+  assert.ok(result.anchors.has('visible'));
+});
 test('headings, literal underscores, common emphasis and duplicate suffixes', () => {
   const result = scanMarkdown('# Hello World!\n## Hello World!\n## API_KEY\n## _Helpful Section_\nSetext\n======\n## 中文标题\n');
   for (const anchor of ['hello-world', 'hello-world-1', 'api_key', 'helpful-section', 'setext', '中文标题']) assert.ok(result.anchors.has(anchor), anchor);

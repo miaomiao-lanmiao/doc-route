@@ -10,9 +10,7 @@ const escaped = (text: string, position: number): boolean => {
   return count % 2 === 1;
 };
 
-function inlineCodeEnd(text: string, start: number, width: number): number | undefined {
-  const newline = text.indexOf('\n', start);
-  const limit = newline < 0 ? text.length : newline;
+function inlineCodeEnd(text: string, start: number, width: number, limit: number): number | undefined {
   let position = start + width;
   while (position < limit) {
     const candidate = text.indexOf('`', position);
@@ -32,7 +30,7 @@ function hideInlineCode(text: string): string {
     if (text[index] !== '`' || escaped(text, index)) continue;
     let width = 1;
     while (text[index + width] === '`') width++;
-    const end = inlineCodeEnd(text, index, width);
+    const end = inlineCodeEnd(text, index, width, text.length);
     if (end !== undefined) {
       for (let position = index; position < end; position++) masked[position] = ' ';
       index = end - 1;
@@ -44,11 +42,17 @@ function hideInlineCode(text: string): string {
 function hideComments(text: string): string {
   const parts: string[] = [];
   let copied = 0;
+  let lineEnd = text.indexOf('\n');
+  if (lineEnd < 0) lineEnd = text.length;
   for (let position = 0; position < text.length;) {
+    if (position > lineEnd) {
+      const newline = text.indexOf('\n', position);
+      lineEnd = newline < 0 ? text.length : newline;
+    }
     if (text[position] === '`' && !escaped(text, position)) {
       let width = 1;
       while (text[position + width] === '`') width++;
-      position = inlineCodeEnd(text, position, width) ?? position + width;
+      position = inlineCodeEnd(text, position, width, lineEnd) ?? position + width;
     } else if (text.startsWith('<!--', position) && !escaped(text, position)) {
       // Code spans are skipped only outside comments; comment bodies close at
       // the first literal terminator even when they contain backticks.

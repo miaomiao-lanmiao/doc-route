@@ -2,11 +2,11 @@
 
 ## Maintenance 0.1.1
 
-Date: 2026-11-06 (Asia/Shanghai). Local environment: Windows, Node.js v24.18.0.
+Date: 2026-11-06 (Asia/Shanghai). Local environment: Windows, Node.js v26.13.0.
 
-- 32 tests pass, including parser, filesystem-audit and CLI regressions for
+- 33 tests pass, including parser, filesystem-audit and CLI regressions for
   literal comment markers in inline code. Real comment endings, escaped markers,
-  unmatched backtick runs and source line numbers are covered.
+  unmatched backtick runs, dense code spans and source line numbers are covered.
 - Strict build, static runtime checks and offline installed-package smoke pass.
 - Source quickstart is checked after `npm ci --ignore-scripts`; valid sample and
   repository documentation audits complete without findings in the supported subset.
