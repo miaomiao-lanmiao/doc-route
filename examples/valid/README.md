@@ -1,5 +1,7 @@
 # Example documentation
 
 - [Installation](guide.md#install)
-- [The project README](../../README.md)
+- [Example overview](README.md#example-documentation)
 - [Project website](https://example.invalid)
+
+Literal comment opener: `<!--`. [Installation still resolves](guide.md#install).

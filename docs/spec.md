@@ -2,6 +2,10 @@
 
 Version: 0.1.0. Date: 2026-11-01 (Asia/Shanghai).
 
+Maintenance 0.1.1 (2026-11-06): literal HTML comment markers inside single-line
+code spans do not hide later links/headings. Actual comments close independently
+of backticks in their bodies; unmatched backtick runs remain literal text.
+
 ## Purpose
 
 Maintainers need to catch broken documentation navigation before a release.
@@ -22,7 +26,7 @@ completed report crosses the gate. Exclusive output creation, no source edits.
 - Inline links/images with balanced labels/targets, angle destinations and
   optional single-line quoted titles; reference, collapsed and defined shortcut links.
 - Forward reference definitions; unresolved explicit references are errors.
-- Ignore fenced code, indented code, inline code and HTML comments.
+- Ignore fenced code, indented code, single-line inline code and HTML comments.
 - ATX/Setext headings, common inline formatting and duplicate heading suffixes.
   Explicit `<a id="...">` / `<a name="...">` anchors with that attribute first.
 - Heading slugs follow a documented conservative subset of GitHub rules. Complex

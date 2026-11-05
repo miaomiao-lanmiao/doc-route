@@ -1,5 +1,20 @@
 # Verification record
 
+## Maintenance 0.1.1
+
+Date: 2026-11-06 (Asia/Shanghai). Local environment: Windows, Node.js v26.13.0.
+
+- 33 tests pass, including parser, filesystem-audit and CLI regressions for
+  literal comment markers in inline code. Real comment endings, escaped markers,
+  unmatched backtick runs, dense code spans and source line numbers are covered.
+- Strict build, static runtime checks and offline installed-package smoke pass.
+- Source quickstart is checked after `npm ci --ignore-scripts`; valid sample and
+  repository documentation audits complete without findings in the supported subset.
+- Hosted CI at the release commit must be checked before tagging. External URLs
+  and unsupported Markdown remain outside this verification.
+
+## Initial 0.1.0
+
 Date: 2026-11-01 (Asia/Shanghai). Local environment: Windows, Node.js v24.18.0.
 
 - 27 tests pass: parser behavior, real filesystem resolution, casing, symlink/

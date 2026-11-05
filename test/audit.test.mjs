@@ -31,6 +31,16 @@ test('URLs are never emitted and local query strings are omitted', t => {
   assert.equal(report.summary.valid, 1);
   for (const format of ['json', 'markdown', 'html']) assert.doesNotMatch(render(report, format), /synthetic-|example\.invalid|user:/);
 });
+
+test('literal comment examples do not hide broken paths or later heading anchors', t => {
+  const { root } = fixture(t);
+  writeFileSync(join(root, 'README.md'), '`<!--` [broken](missing.md)\n# Visible\n[heading](#visible)');
+  const report = audit(root);
+  assert.equal(report.summary.links, 2);
+  assert.equal(report.summary.errors, 1);
+  assert.equal(report.summary.valid, 1);
+  assert.deepEqual(report.checks.map(check => [check.line, check.code]), [[1, 'MISSING_TARGET'], [3, 'OK']]);
+});
 test('outside paths, encoded traversal, drives and backslashes stay bounded', t => {
   const { parent, root } = fixture(t);
   writeFileSync(join(parent, 'outside.md'), Buffer.from([0xff]));

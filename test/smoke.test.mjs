@@ -38,10 +38,19 @@ test('warning gate includes unverified fragments', t => {
   assert.equal(run(['check', root]).status, 0);
   assert.equal(run(['check', root, '--fail-on', 'warning']).status, 2);
 });
+
+test('CLI finding gate detects broken links after literal comment examples', t => {
+  const root = mkdtempSync(join(tmpdir(), 'doc route literal comment '));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  writeFileSync(join(root, 'README.md'), '`<!--` [broken](missing.md)');
+  const result = run(['check', root, '--format', 'json']);
+  assert.equal(result.status, 2, result.stderr);
+  assert.equal(JSON.parse(result.stdout).checks[0].code, 'MISSING_TARGET');
+});
 for (const args of [[], ['unknown'], ['check'], ['check', 'missing-root'], ['check', '.', '--format', 'xml'], ['check', '.', '--fail-on', 'invalid'], ['check', '.', '--output'], ['check', '.', '--format', 'json', '--format', 'html']]) {
   test(`CLI argument behavior ${JSON.stringify(args)}`, () => assert.equal(run(args).status, args.length ? 1 : 0));
 }
 test('help and version do not inspect projects', () => {
   assert.equal(run(['--help']).status, 0);
-  assert.equal(run(['--version']).stdout, '0.1.0\n');
+  assert.equal(run(['--version']).stdout, '0.1.1\n');
 });

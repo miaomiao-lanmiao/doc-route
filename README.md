@@ -6,6 +6,10 @@
 portable filename casing and common heading/custom-anchor fragments before a
 release. Zero runtime dependencies. No remote URL fetching or repository execution.
 
+0.1.1 修复行内代码里的 `<!--` 导致后续链接和标题被漏检的问题。
+Version 0.1.1 keeps links and headings visible after literal comment markers in
+inline code. See the [release notes](docs/releases/v0.1.1.md).
+
 ## 快速开始 / Quickstart
 
 Node.js **22+** and npm are required. From this source directory:
@@ -57,7 +61,8 @@ findings. Output files are created exclusively and never replace existing files.
 - Local target existence and **exact filename case on every platform**.
 - ATX and Setext headings, common formatting, duplicate heading suffixes,
   explicit first-attribute `a id` / `a name` anchors.
-- Ignore fenced code, indented code, inline code and HTML comments.
+- Ignore fenced code, indented code, single-line inline code and HTML comments.
+  Literal comment markers in code do not hide subsequent documentation.
 
 | Finding | Level | Meaning |
 | --- | --- | --- |
