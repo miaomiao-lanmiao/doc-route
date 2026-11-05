@@ -18,6 +18,30 @@ test('comment text inside a fenced example does not hide following real links', 
   const result = scanMarkdown('```html\n<!-- unclosed sample\n```\n[real](README.md)');
   assert.equal(result.links[0].destination, 'README.md');
 });
+
+test('comment markers inside inline code leave following links and headings visible', () => {
+  const result = scanMarkdown('`<!--` [real](README.md)\n``a ` <!--`` [second](guide.md)\n# Visible heading\n[heading](#visible-heading)');
+  assert.deepEqual(result.links, [
+    { line: 1, destination: 'README.md' },
+    { line: 2, destination: 'guide.md' },
+    { line: 4, destination: '#visible-heading' },
+  ]);
+  assert.ok(result.anchors.has('visible-heading'));
+});
+
+test('real comments close independently of backticks and do not invent code spans', () => {
+  const result = scanMarkdown('<!-- ` [hidden](bad) --> `<!--` [real](good)\n<!-- multi\n` --> [later](later)');
+  assert.deepEqual(result.links, [
+    { line: 1, destination: 'good' },
+    { line: 3, destination: 'later' },
+  ]);
+});
+
+test('unmatched backtick runs and escaped comment openers remain literal', () => {
+  assert.deepEqual(scanMarkdown('`unclosed <!-- [hidden](bad) --> [real](good)').links, [{ line: 1, destination: 'good' }]);
+  assert.deepEqual(scanMarkdown('`[literal](good)``').links, [{ line: 1, destination: 'good' }]);
+  assert.deepEqual(scanMarkdown('\\<!-- [real](good)').links, [{ line: 1, destination: 'good' }]);
+});
 test('headings, literal underscores, common emphasis and duplicate suffixes', () => {
   const result = scanMarkdown('# Hello World!\n## Hello World!\n## API_KEY\n## _Helpful Section_\nSetext\n======\n## 中文标题\n');
   for (const anchor of ['hello-world', 'hello-world-1', 'api_key', 'helpful-section', 'setext', '中文标题']) assert.ok(result.anchors.has(anchor), anchor);

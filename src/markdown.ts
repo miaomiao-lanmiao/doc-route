@@ -10,6 +10,21 @@ const escaped = (text: string, position: number): boolean => {
   return count % 2 === 1;
 };
 
+function inlineCodeEnd(text: string, start: number, width: number): number | undefined {
+  const newline = text.indexOf('\n', start);
+  const limit = newline < 0 ? text.length : newline;
+  let position = start + width;
+  while (position < limit) {
+    const candidate = text.indexOf('`', position);
+    if (candidate < 0 || candidate >= limit) return undefined;
+    let run = 1;
+    while (text[candidate + run] === '`') run++;
+    if (run === width) return candidate + run;
+    position = candidate + run;
+  }
+  return undefined;
+}
+
 function hideInlineCode(text: string): string {
   // Work with UTF-16 indices so masking preserves positions in the source line.
   const masked = text.split('');
@@ -17,21 +32,34 @@ function hideInlineCode(text: string): string {
     if (text[index] !== '`' || escaped(text, index)) continue;
     let width = 1;
     while (text[index + width] === '`') width++;
-    let end = index + width;
-    while (end < text.length) {
-      const candidate = text.indexOf('`', end);
-      if (candidate < 0) { end = -1; break; }
-      let run = 1;
-      while (text[candidate + run] === '`') run++;
-      if (run === width) { end = candidate + run; break; }
-      end = candidate + run;
-    }
-    if (end > 0 && end <= text.length && text.slice(end - width, end) === '`'.repeat(width)) {
+    const end = inlineCodeEnd(text, index, width);
+    if (end !== undefined) {
       for (let position = index; position < end; position++) masked[position] = ' ';
       index = end - 1;
     } else index += width - 1;
   }
   return masked.join('');
+}
+
+function hideComments(text: string): string {
+  const parts: string[] = [];
+  let copied = 0;
+  for (let position = 0; position < text.length;) {
+    if (text[position] === '`' && !escaped(text, position)) {
+      let width = 1;
+      while (text[position + width] === '`') width++;
+      position = inlineCodeEnd(text, position, width) ?? position + width;
+    } else if (text.startsWith('<!--', position) && !escaped(text, position)) {
+      // Code spans are skipped only outside comments; comment bodies close at
+      // the first literal terminator even when they contain backticks.
+      const close = text.indexOf('-->', position + 4);
+      const end = close < 0 ? text.length : close + 3;
+      parts.push(text.slice(copied, position), blank(text.slice(position, end)));
+      copied = end; position = end;
+    } else position++;
+  }
+  parts.push(text.slice(copied));
+  return parts.join('');
 }
 
 function destination(text: string, start: number, inline: boolean): { value: string; end: number } | null {
@@ -84,7 +112,7 @@ export function scanMarkdown(input: string): Markdown {
       fence = { character: marker[1]![0]!, width: marker[1]!.length }; lines[index] = blank(line);
     } else if (/^(?: {4}|\t)/.test(line)) lines[index] = blank(line);
   }
-  lines = lines.join('\n').replace(/<!--[\s\S]*?(?:-->|$)/g, blank).split('\n');
+  lines = hideComments(lines.join('\n')).split('\n');
   const anchors = new Set<string>();
   const headingNames = new Set<string>();
   const headingCounts = new Map<string, number>();

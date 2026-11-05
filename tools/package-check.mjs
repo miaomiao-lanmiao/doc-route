@@ -27,11 +27,14 @@ try {
   const packagedDocs = spawnSync(process.execPath, [join(installedRoot, 'dist/cli.js'), 'check', installedRoot, '--format', 'json'], { encoding: 'utf8', cwd: temporary });
   assert.equal(packagedDocs.status, 0, packagedDocs.stderr + packagedDocs.stdout);
   assert.equal(JSON.parse(packagedDocs.stdout).summary.errors, 0);
+  const example = spawnSync(process.execPath, [join(installedRoot, 'dist/cli.js'), 'check', join(installedRoot, 'examples/valid'), '--format', 'json'], { encoding: 'utf8', cwd: temporary });
+  assert.equal(example.status, 0, example.stderr + example.stdout);
+  assert.equal(JSON.parse(example.stdout).summary.errors, 0);
   const bin = join(temporary, 'node_modules/.bin');
   const executable = process.platform === 'win32'
     ? spawnSync(process.env.ComSpec ?? 'cmd.exe', ['/d', '/s', '/c', 'docroute.cmd --version'], { cwd: bin, encoding: 'utf8', windowsHide: true })
     : spawnSync(join(bin, 'docroute'), ['--version'], { encoding: 'utf8' });
   assert.equal(executable.status, 0, executable.stderr);
   assert.equal(executable.stdout, `${manifest.version}\n`);
-  console.log('Offline package installation, local link check and installed executable passed.');
+  console.log('Offline package installation, local and example link checks and installed executable passed.');
 } finally { rmSync(temporary, { recursive: true, force: true }); }

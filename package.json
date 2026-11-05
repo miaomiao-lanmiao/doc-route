@@ -1,5 +1,5 @@
 {
-  "name": "doc-route-cli", "version": "0.1.0", "type": "module", "license": "MIT",
+  "name": "doc-route-cli", "version": "0.1.1", "type": "module", "license": "MIT",
   "description": "Offline Markdown navigation checks for local paths and anchors.",
   "engines": { "node": ">=22" },
   "bin": { "docroute": "dist/cli.js" },
